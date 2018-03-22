@@ -52,7 +52,7 @@ def ann_model(input_shape):
 
 """
 Trains the neural network using generated test data. Saved the model and the
-training history in the ./out folder
+training history in the ./out folder.
 """
 def train_ann():
     X, Y = extract_features()
@@ -66,35 +66,40 @@ def train_ann():
     filename = "out/ann.hdf5"
 
     checkpoint = ModelCheckpoint(filepath=filename, monitor='val_loss', verbose=0, save_best_only=True)
-    cutoff = EarlyStopping(monitor='val_loss', min_delta=1E-8, verbose=0, mode='min', patience=5)
+    cutoff = EarlyStopping(monitor='val_loss', min_delta=1E-3, mode='min', patience=5)
 
-    model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
+    model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 
     X = X.T
     X = X[..., np.newaxis]
 
-    cw = class_weight.compute_class_weight('balanced', np.unique(Y), Y)
+    # # Balance classes such that there are n of each class
+    # balance = balance_classes(Y)
+    # X = X[balance]
+    # Y = Y[balance]
+
+    print("Label 1:", len(Y[Y==1]))
+    print("Label 0:", len(Y[Y==0]))
+
+    # Permutate training data in random order
+    rand = np.random.permutation(np.arange(len(Y)))
+    X = X[rand]
+    Y = Y[rand]
 
     options = {
-        'epochs': 2000,
+        'epochs': 200,
         'batch_size': 32,
-        'class_weight': cw,
         'shuffle': True,
         'validation_split': 0.3,
         'verbose': 0,
         'callbacks': [checkpoint, cutoff]
     }
 
-    rand = np.random.permutation(np.arange(len(Y)))
-    X = X[rand]
-    Y = Y[rand]
-
     print("Training neural network:", filename)
     hist = model.fit(X, Y, **options)
 
     print('val_loss:', min(hist.history['val_loss']))
     print('val_acc:', max(hist.history['val_acc']))
-
 
     with open('out/ann.hist', 'wb') as hist_file:
         pickle.dump(hist.history, hist_file)

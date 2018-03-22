@@ -14,15 +14,9 @@ TRAIN_DIR = os.path.join(DIRNAME, 'training')
 
 FREQ = 16000        # Audio frequency
 N_MFCC = 13
-HOP_LEN = 1024.0    # Num of items per sample
+HOP_LEN = 512.0    # Num of items per sample
                     # 1 item = 1/16000 seg = 32 ms
-ITEM_TIME = (1.0/FREQ)*HOP_LEN
-
-
-LEN_SAMPLE = 0.5                        # Length in seconds for the input samples
-STEP_SAMPLE = 0.25                      # Space between the begining of each sample
-LEN_MFCC = LEN_SAMPLE/(HOP_LEN/FREQ)    #  Num of samples to get LEN_SAMPLE
-STEP_MFCC = STEP_SAMPLE/(HOP_LEN/FREQ)  #  Num of samples to get STEP_SAMPLE
+ITEM_TIME = HOP_LEN/FREQ
 
 
 if not os.path.exists(TRAIN_DIR):
@@ -35,21 +29,11 @@ def timeToSec(t):
     total_sec += t.seconds
     total_sec += t.minutes*60
     total_sec += t.hours*60*60
-
     return total_sec
 
-
 # Return timestamp from cell position
-def timeToPos(t, step_mfcc=STEP_MFCC, freq=FREQ, hop_len=HOP_LEN):
-    return int((float(freq*timeToSec(t))/hop_len)/step_mfcc)
-
-# Return seconds from cell position
-def secToPos(t, step_mfcc=STEP_MFCC, freq=FREQ, hop_len=HOP_LEN):
-    return int((float(freq*t)/hop_len)/step_mfcc)
-
-# Return cell position from timestamp
-def posToTime(pos, step_mfcc=STEP_MFCC, freq=FREQ, hop_len=HOP_LEN):
-    return float(pos)*step_mfcc*hop_len/freq
+def timeToPos(t, freq=FREQ, hop_len=HOP_LEN):
+    return round(timeToSec(t)/(hop_len/freq))
 
 
 """
@@ -57,8 +41,8 @@ Uses ffmpeg to transcode and extract audio from movie files in the training
 directory. Function returns a list of tuples; the .wav files and corresponding
 .srt files to processing
 """
-def transcode_audio():
-    files = os.listdir(TRAIN_DIR)
+def transcode_audio(dir=TRAIN_DIR):
+    files = os.listdir(dir)
     p = re.compile('.*\.[mkv|avi]')
     files = [ f for f in files if p.match(f) ]
 
@@ -66,9 +50,9 @@ def transcode_audio():
 
     for f in files:
         name, extension = os.path.splitext(f)
-        input = os.path.join(TRAIN_DIR, f)
-        output = os.path.join(TRAIN_DIR, name + '.wav')
-        srt = os.path.join(TRAIN_DIR, name + '.srt')
+        input = os.path.join(dir, f)
+        output = os.path.join(dir, name + '.wav')
+        srt = os.path.join(dir, name + '.srt')
 
         if not os.path.exists(srt):
             print("missing subtitle for training:", srt)
@@ -124,6 +108,37 @@ def extract_labels(srt, samples):
                 labels[i] = 1
 
     return labels
+
+
+"""
+Returns a mask of indexes in Y (a selection) for which the selection has an
+equal/balanced choice for every unique value in Y. That is exactly n items are
+chosen for each class.
+"""
+def balance_classes(Y):
+    uniq = np.unique(Y)
+    C = [np.squeeze(np.argwhere(Y==c)) for c in uniq]
+    minority = min([len(c) for c in C])
+    M = [np.random.choice(c, size=minority, replace=False) for c in C]
+    return np.append(*M)
+
+
+"""
+Prepares the data for processing in a neural network. First the data is
+converted to the proper dimensions, and afterwards the data is balanced
+for class imbalance issues.
+"""
+def prepare_data(X, Y, balance=True):
+    X = X.T
+    X = X[..., np.newaxis]
+
+    if balance:
+        # Balance classes such that there are n of each class
+        balance = balance_classes(Y)
+        X = X[balance], Y = Y[balance]
+
+    return X, Y
+
 
 """
 Used to plot the MFCC spectrograms for inspecting

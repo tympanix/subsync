@@ -8,8 +8,12 @@ setup:
 train:
 	python train_ann.py
 
-inspect:
-	python inspect_ann.py
+eval:
+	python eval_ann.py
+
+test:
+	python test.py
+.PHONY: test
 
 clean:
 	rm $(TRAIN_DIR)/*.wav
