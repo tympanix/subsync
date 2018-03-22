@@ -66,7 +66,7 @@ def train_ann():
     filename = "out/ann.hdf5"
 
     checkpoint = ModelCheckpoint(filepath=filename, monitor='val_loss', verbose=0, save_best_only=True)
-    cutoff = EarlyStopping(monitor='val_loss', min_delta=0.00001, verbose=0, mode='min', patience=5)
+    cutoff = EarlyStopping(monitor='val_loss', min_delta=1E-8, verbose=0, mode='min', patience=5)
 
     model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 
@@ -85,6 +85,11 @@ def train_ann():
         'callbacks': [checkpoint, cutoff]
     }
 
+    rand = np.random.permutation(np.arange(len(Y)))
+    X = X[rand]
+    Y = Y[rand]
+
+    print("Training neural network:", filename)
     hist = model.fit(X, Y, **options)
 
     print('val_loss:', min(hist.history['val_loss']))

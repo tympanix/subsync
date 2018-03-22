@@ -14,7 +14,7 @@ TRAIN_DIR = os.path.join(DIRNAME, 'training')
 
 FREQ = 16000        # Audio frequency
 N_MFCC = 13
-HOP_LEN = 1024.0     # Num of items per sample
+HOP_LEN = 1024.0    # Num of items per sample
                     # 1 item = 1/16000 seg = 32 ms
 ITEM_TIME = (1.0/FREQ)*HOP_LEN
 
@@ -99,7 +99,7 @@ def extract_features(files=None):
     labels = []
 
     for (wav, srt) in files:
-        print("Processing MFCC:", wav)
+        print("Processing audio:", wav)
         y, sr = librosa.load(wav, sr=FREQ)
         mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=int(HOP_LEN), n_mfcc=int(N_MFCC))
         label = extract_labels(srt, len(mfcc[0]))
