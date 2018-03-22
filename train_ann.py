@@ -1,5 +1,5 @@
 from train_data import *
-from keras.utils import plot_model
+#from keras.utils import plot_model
 import numpy as np
 
 from keras.layers import Dense, Input, LSTM, Conv1D, Conv2D, Dropout, Flatten, Activation, MaxPooling2D
@@ -38,14 +38,26 @@ def ann_model(input_shape):
 def train_ann():
     X, Y = extract_features()
 
-    model = ann_model(len(X))
+    # Only consider first media file for now
+    X, Y = X[0], Y[0]
+
+    shape = (len(X), 1)
+    model = ann_model(shape)
+
+    filename = "ann.hdf5"
 
     checkpoint = ModelCheckpoint(filepath=filename, monitor='val_loss', verbose=0, save_best_only=True)
+    cutoff = EarlyStopping(monitor='val_loss', min_delta=0.0001, verbose=0, mode='min', patience=5)
+
+    callbacks = [checkpoint, cutoff]
 
     model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 
-    plot_model(model, to_file='model.png')
-    hist = model.fit(X, Y, epochs=2000, batch_size=32, shuffle=True, validation_split=0.3, verbose=0, callbacks=[checkpoint])
+    X = X.T
+    X = X[..., np.newaxis]
+
+    #plot_model(model, to_file='model.png')
+    hist = model.fit(X, Y, epochs=2000, batch_size=32, shuffle=True, validation_split=0.3, verbose=0, callbacks=callbacks)
 
     print('val_loss:', min(hist.history['val_loss']))
     print('val_acc:', max(hist.history['val_acc']))
