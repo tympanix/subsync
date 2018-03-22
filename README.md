@@ -8,6 +8,6 @@
 
 ## Getting Started
   * Firstly, add some training material to `/training` folder
-    * Movie material and matching subtitle (e.g. *test1.mkv* and *movie1.srt*)
+    * Movie material and matching subtitle (e.g. *train1.mkv* and *train1.srt*)
   * Train the neural network `make train`
   * Evaluate the performance of the neural network `make inspect`
