@@ -16,7 +16,8 @@ import matplotlib.pylab as plt
 # Sklearn imports
 from sklearn.utils import class_weight
 
-OUT_DIR = "./out"
+DIRNAME = os.path.dirname(os.path.realpath(__file__))
+OUT_DIR = os.path.join(DIRNAME, "out")
 
 if not os.path.exists(OUT_DIR):
     os.makedirs(OUT_DIR)

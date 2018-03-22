@@ -9,7 +9,8 @@ import sys
 import os
 import re
 
-TRAIN_DIR = 'training'
+DIRNAME = os.path.dirname(os.path.realpath(__file__))
+TRAIN_DIR = os.path.join(DIRNAME, 'training')
 
 FREQ = 16000        # Audio frequency
 N_MFCC = 13
