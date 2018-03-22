@@ -6,7 +6,9 @@ chardet==3.0.4
 cycler==0.10.0
 decorator==4.2.1
 gast==0.2.0
+graphviz==0.8.2
 grpcio==1.10.0
+h5py==2.7.1
 html5lib==0.9999999
 joblib==0.11
 Keras==2.1.5
@@ -18,6 +20,7 @@ matplotlib==2.2.2
 numba==0.37.0
 numpy==1.14.2
 protobuf==3.5.2.post1
+pydot==1.2.4
 pyparsing==2.2.0
 pysrt==1.1.1
 python-dateutil==2.7.0
@@ -27,6 +30,7 @@ resampy==0.2.0
 scikit-learn==0.19.1
 scipy==1.0.0
 six==1.11.0
+sklearn==0.0
 tensorboard==1.6.0
 tensorflow==1.6.0
 termcolor==1.1.0
