@@ -11,6 +11,9 @@ train:
 eval:
 	python eval_ann.py
 
+logloss:
+	python eval_logloss.py
+
 test:
 	python test.py
 .PHONY: test
