@@ -70,13 +70,7 @@ def train_ann():
 
     model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 
-    X = X.T
-    X = X[..., np.newaxis]
-
-    # # Balance classes such that there are n of each class
-    # balance = balance_classes(Y)
-    # X = X[balance]
-    # Y = Y[balance]
+    X, Y = prepare_data(X, Y, balance=True)
 
     print("Label 1:", len(Y[Y==1]))
     print("Label 0:", len(Y[Y==0]))

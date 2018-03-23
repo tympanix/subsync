@@ -135,7 +135,8 @@ def prepare_data(X, Y, balance=True):
     if balance:
         # Balance classes such that there are n of each class
         balance = balance_classes(Y)
-        X = X[balance], Y = Y[balance]
+        X = X[balance]
+        Y = Y[balance]
 
     return X, Y
 
