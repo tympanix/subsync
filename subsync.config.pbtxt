@@ -1,0 +1,17 @@
+# Each feed is a positional input argument for the generated function.  The order
+# of each entry matches the order of each input argument.  Here “x_hold” and “y_hold”
+# refer to the names of placeholder nodes defined in the graph.
+feed {
+  id { node_name: "mfcc_input" }
+  shape {
+    dim { size: 13 }
+    dim { size: 1 }
+  }
+}
+
+# Each fetch is a positional output argument for the generated function.  The order
+# of each entry matches the order of each output argument.  Here “x_y_prod”
+# refers to the name of a matmul node defined in the graph.
+fetch {
+  id { node_name: "speech_output" }
+}

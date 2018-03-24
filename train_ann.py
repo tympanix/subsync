@@ -28,7 +28,7 @@ needs to be compiled
 """
 def ann_model(input_shape):
 
-    inp = Input(shape=input_shape)
+    inp = Input(shape=input_shape, name="mfcc_input")
     model = inp
 
     model = Conv1D(filters=12, kernel_size=(3), activation='relu')(model)
@@ -38,13 +38,13 @@ def ann_model(input_shape):
     model = Dense(56)(model)
     model = Activation('relu')(model)
     model = BatchNormalization()(model)
-    model = Dropout(0.2)(model)
+    model = Dropout(0.3)(model)
     model = Dense(28)(model)
     model = Activation('relu')(model)
     model = BatchNormalization()(model)
 
     model = Dense(1)(model)
-    model = Activation('sigmoid')(model)
+    model = Activation('sigmoid', name='speech_output')(model)
 
     model = Model(inp, model)
     return model
