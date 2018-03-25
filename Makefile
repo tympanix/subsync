@@ -1,25 +1,20 @@
 #!/usr/bin/env make
 
-TRAIN_DIR = training
-
 setup:
-	python train_data.py
+	python subsync/model/train_data.py
 
 train:
-	python train_ann.py
+	python subsync/model/train_ann.py
 
 eval:
-	python eval_ann.py
+	python subsync/model/eval_ann.py
 
 logloss:
-	python eval_logloss.py
+	python subsync/model/eval_logloss.py
 
 test:
-	python test.py
+	python subsync/model/test.py
 .PHONY: test
-
-clean:
-	rm $(TRAIN_DIR)/*.wav
 
 freeze:
 	pip freeze > requirements.txt
