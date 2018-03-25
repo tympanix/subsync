@@ -7,7 +7,7 @@
 * Install dependencies `pip install -r requirements.txt`
 
 ## Getting Started
-  * Firstly, add some training material to `/training` folder
+  * Firstly, add some training material to `subsync/model/training` folder
     * Movie material and matching subtitle (e.g. *train1.mkv* and *train1.srt*)
   * Train the neural network `make train`
   * Evaluate the performance of the neural network `make eval`
