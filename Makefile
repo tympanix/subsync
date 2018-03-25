@@ -12,6 +12,9 @@ eval:
 logloss:
 	python subsync/model/eval_logloss.py
 
+convert:
+	python subsync/model/eval_convert.py
+
 test:
 	python subsync/model/test.py
 .PHONY: test
