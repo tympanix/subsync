@@ -2,13 +2,16 @@ import argparse
 
 def main(args):
     from media import Media
-
     media = [Media(m) for m in args]
 
+    from net import NeuralNet
+    model = NeuralNet()
+
     for m in media:
-        print("Subtitles for", m.filepath)
+        m.mfcc()
         for s in m.subtitles():
-            print(" -", s)
+            s.sync(model)
+
 
 
 if __name__ == '__main__':

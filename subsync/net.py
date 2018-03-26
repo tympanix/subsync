@@ -1,5 +1,6 @@
 import os
 import tensorflow as tf
+import numpy as np
 
 class NeuralNet:
     """
@@ -38,5 +39,9 @@ class NeuralNet:
 
 
     def predict(self, mfcc):
-        with tf.Session(graph=graph) as sess:
-            return sess.run(self.output, feed_dict={self.input: mfcc})
+        print("Predicting values...")
+        pred = np.zeros(len(mfcc))
+        with tf.Session(graph=self.graph) as sess:
+            for i in range(len(mfcc)):
+                pred[i] = sess.run(self.output, feed_dict={self.input: mfcc[[i]]})
+        return pred
