@@ -13,8 +13,8 @@ class NeuralNet:
     def __init__(self):
         model = os.path.join(NeuralNet.DIR, 'subsync.pb')
         self.graph = self.load_graph(model)
-        self.input = self.graph.get_tensor_by_name('mfcc/mfcc_input:0')
-        self.output = self.graph.get_tensor_by_name('mfcc/speech_0:0')
+        self.input = self.graph.get_tensor_by_name('subsync/mfcc_in:0')
+        self.output = self.graph.get_tensor_by_name('subsync/speech_out:0')
 
 
     def summary(self):
@@ -32,7 +32,7 @@ class NeuralNet:
                 graph_def,
                 input_map=None,
                 return_elements=None,
-                name="mfcc",
+                name="subsync",
                 producer_op_list=None
             )
         return graph
@@ -40,8 +40,5 @@ class NeuralNet:
 
     def predict(self, mfcc):
         print("Predicting values...")
-        pred = np.zeros(len(mfcc))
         with tf.Session(graph=self.graph) as sess:
-            for i in range(len(mfcc)):
-                pred[i] = sess.run(self.output, feed_dict={self.input: mfcc[[i]]})
-        return pred
+            return sess.run(self.output, feed_dict={self.input: mfcc})

@@ -45,8 +45,9 @@ if __name__ == '__main__':
         shape = (len(X), 1)
         X, Y = prepare_data(X, Y, balance=False)
         model = load_model(shape)
+        print("Predicting...")
         pred = model.predict(X, batch_size=32)
-
+        print("Done...")
         x, y = logloss(pred, Y)
         plot_logloss(x, y)
         plt.show()

@@ -13,7 +13,7 @@ logloss:
 	python subsync/model/eval_logloss.py
 
 convert:
-	python subsync/model/eval_convert.py
+	python subsync/model/convert.py
 
 test:
 	python subsync/model/test.py

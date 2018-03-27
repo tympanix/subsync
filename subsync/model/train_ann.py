@@ -28,7 +28,7 @@ needs to be compiled
 """
 def ann_model(input_shape):
 
-    inp = Input(shape=input_shape)
+    inp = Input(shape=input_shape, name='mfcc_in')
     model = inp
 
     model = Conv1D(filters=12, kernel_size=(3), activation='relu')(model)
