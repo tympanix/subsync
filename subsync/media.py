@@ -5,6 +5,8 @@ import tempfile
 import soundfile as sf
 import io
 import pysrt
+import string
+import random
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -53,10 +55,9 @@ class Media:
 
 
     def mfcc(self):
-        outpath = None
-        with tempfile.NamedTemporaryFile(suffix='.wav', mode='r') as output:
-            outpath = output.name
-        print("Transcoding:", output.name)
+        filename = 'subsync_' + randomString() + '.wav'
+        outpath = os.path.join(tempfile.gettempdir(), filename)
+        print("Transcoding:", outpath)
         command = Media.FFMPEG_CMD.format(self.filepath, outpath, Media.FREQ)
         code = subprocess.call(command, stderr=subprocess.DEVNULL, shell=True)
         y, sr = librosa.load(outpath, sr=Media.FREQ)
@@ -118,13 +119,27 @@ class Subtitle:
         return indices, logloss
 
 
-    def sync(self, net):
+    def sync(self, net, safe=True, plot=False):
         labels = self.labels()
         mfcc = self.media.mfcc.T
         mfcc = mfcc[..., np.newaxis]
         pred = net.predict(mfcc)
         x, y = self.logloss(pred, labels)
-        self.plot_logloss(x, y)
+        accept = True
+        if safe:
+            mean = np.mean(y)
+            sd = np.std(y)
+            print("Mean", mean)
+            print("Std", sd)
+            accept = np.min(y) < mean - sd
+        if accept:
+            secs = blocksToSeconds(x[np.argmin(y)])
+            print("Shift:", secs)
+            subs = pysrt.open(self.path)
+            subs.shift(seconds=secs)
+            subs.save(self.path, encoding='utf-8')
+        if plot:
+            self.plot_logloss(x, y)
 
 
     def plot_logloss(self, x, y):
@@ -150,3 +165,11 @@ def timeToSec(t):
 # Return timestamp from cell position
 def timeToPos(t, freq=Media.FREQ, hop_len=Media.HOP_LEN):
     return round(timeToSec(t)/(hop_len/freq))
+
+
+def blocksToSeconds(h, freq=Media.FREQ, hop_len=Media.HOP_LEN):
+    return float(h)*(hop_len/freq)
+
+def randomString(len=12):
+    allchar = string.ascii_letters + string.digits
+    return "".join(random.choice(allchar) for x in range(len))
