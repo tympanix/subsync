@@ -5,8 +5,10 @@ import tempfile
 import soundfile as sf
 import io
 import pysrt
+from pysrt import SubRipTime
 import string
 import random
+from datetime import timedelta
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -44,6 +46,7 @@ class Media:
         self.filepath = filepath
         self.filename = os.path.basename(prefix)
         self.extension = ext
+        self.offset = timedelta()
 
 
     def subtitles(self):
@@ -54,7 +57,8 @@ class Media:
 
 
     def mfcc(self):
-        transcode = Transcode(self.filepath, duration=60*25)
+        transcode = Transcode(self.filepath, duration=60*25, seek=True)
+        self.offset = transcode.start
         print("Transcoding:", transcode.output)
         transcode.run()
         y, sr = librosa.load(transcode.output, sr=Media.FREQ)
@@ -92,13 +96,23 @@ class Subtitle:
         samples = len(self.media.mfcc[0])
         labels = np.zeros(samples)
         for sub in self.subs:
-            start = timeToPos(sub.start)
-            end = timeToPos(sub.end)+1
+            start = timeToPos(sub.start - self.offset())
+            end = timeToPos(sub.end - self.offset())+1
             for i in range(start, end):
-                if i < len(labels):
+                if i >= 0 and i < len(labels):
                     labels[i] = 1
 
         return labels
+
+
+    def offset(self):
+        d = self.media.offset
+        hours, remainder = divmod(d.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        return SubRipTime(
+            hours=hours, minutes=minutes, seconds=seconds,
+            milliseconds=d.microseconds/1000
+        )
 
 
     def logloss(self, pred, actual, margin=12):
@@ -114,7 +128,7 @@ class Subtitle:
         return indices, logloss
 
 
-    def sync(self, net, safe=True, margin=12, plot=False):
+    def sync(self, net, safe=True, margin=12, plot=True):
         labels = self.labels()
         mfcc = self.media.mfcc.T
         mfcc = mfcc[..., np.newaxis]
@@ -124,8 +138,6 @@ class Subtitle:
         if safe:
             mean = np.mean(y)
             sd = np.std(y)
-            print("Mean", mean)
-            print("Std", sd)
             accept = np.min(y) < mean - sd
         if accept:
             secs = blocksToSeconds(x[np.argmin(y)])

@@ -36,7 +36,7 @@ class Transcode:
         cmd.extend(('-i', self.input))
 
         if self.start > timedelta():
-            cmd.extend(('-s', duration_str(self.start)))
+            cmd.extend(('-ss', duration_str(self.start)))
 
         if self.duration > timedelta():
             cmd.extend(('-t', self.duration.seconds))
@@ -66,7 +66,6 @@ class Transcode:
 
 
     def run(self):
-        print(" ".join(self.command()))
         code = subprocess.call(self.command(), stderr=DEVNULL, shell=True)
         if code != 0:
             raise RuntimeError('Could not transcode audio:', self.input)
@@ -78,6 +77,6 @@ def randomString(len=12):
 
 
 def duration_str(d):
-    hours, remainder = divmod(d, 3600)
+    hours, remainder = divmod(d.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
-    return '{:02d}:{:02d}:{:02d}.00'.format(hours, minutes, seconds)
+    return '{:02d}:{:02d}:{:02d}.{:06d}'.format(hours, minutes, seconds, d.microseconds)
