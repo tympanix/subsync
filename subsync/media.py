@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn
 
+from ffmpeg import Transcode
+
 
 class Media:
     """
@@ -24,9 +26,6 @@ class Media:
 
     # The frequency of the generated audio
     FREQ = 16000
-
-    # The command used to generate raw wav audio with ffmpeg
-    FFMPEG_CMD = 'ffmpeg -y -i "{0}" -ab 160k -ac 2 -ar {2} -vn "{1}"'
 
     # The number of coefficients to extract from the mfcc
     N_MFCC = 13
@@ -55,18 +54,16 @@ class Media:
 
 
     def mfcc(self):
-        filename = 'subsync_' + randomString() + '.wav'
-        outpath = os.path.join(tempfile.gettempdir(), filename)
-        print("Transcoding:", outpath)
-        command = Media.FFMPEG_CMD.format(self.filepath, outpath, Media.FREQ)
-        code = subprocess.call(command, stderr=subprocess.DEVNULL, shell=True)
-        y, sr = librosa.load(outpath, sr=Media.FREQ)
+        transcode = Transcode(self.filepath, duration=60*25)
+        print("Transcoding:", transcode.output)
+        transcode.run()
+        y, sr = librosa.load(transcode.output, sr=Media.FREQ)
         print("Analysing...")
         self.mfcc = librosa.feature.mfcc(y=y, sr=sr,
             hop_length=int(Media.HOP_LEN),
             n_mfcc=int(Media.N_MFCC)
         )
-        os.remove(outpath)
+        os.remove(transcode.output)
         return self.mfcc
 
 
@@ -87,14 +84,14 @@ class Subtitle:
     def __init__(self, media, path):
         self.media = media
         self.path = path
+        self.subs = pysrt.open(self.path, encoding='iso-8859-1')
 
     def labels(self):
         if self.media.mfcc is None:
             raise RuntimeError("Must analyse mfcc before generating labels")
-        subs = pysrt.open(self.path)
         samples = len(self.media.mfcc[0])
         labels = np.zeros(samples)
-        for sub in subs:
+        for sub in self.subs:
             start = timeToPos(sub.start)
             end = timeToPos(sub.end)+1
             for i in range(start, end):
@@ -104,27 +101,25 @@ class Subtitle:
         return labels
 
 
-    def logloss(self, pred, actual):
-        begin = np.argmax(actual) * (-1)
-        begin = max(begin, Subtitle.MAX_SHIFTS*(-1))
-        end = np.argmax(actual[::-1]) + 1
-        end = min(end, Subtitle.MAX_SHIFTS)
-        print("Calculating {} logloss values...".format(end-begin))
-        logloss = np.zeros(end-begin)
-        indices = np.zeros(end-begin)
-        for i, offset in enumerate(range(begin, end)):
-            logloss[i] = sklearn.metrics.log_loss(np.roll(actual, offset), pred)
+    def logloss(self, pred, actual, margin=12):
+        blocks = secondsToBlocks(margin)
+        print("Calculating {} logloss values...".format(blocks*2))
+        logloss = np.ones(blocks*2)
+        indices = np.ones(blocks*2)
+        for i, offset in enumerate(range(-blocks, blocks)):
+            snippet = np.roll(actual, offset)
+            logloss[i] = sklearn.metrics.log_loss(snippet[blocks:-blocks], pred[blocks:-blocks])
             indices[i] = offset
 
         return indices, logloss
 
 
-    def sync(self, net, safe=True, plot=False):
+    def sync(self, net, safe=True, margin=12, plot=False):
         labels = self.labels()
         mfcc = self.media.mfcc.T
         mfcc = mfcc[..., np.newaxis]
         pred = net.predict(mfcc)
-        x, y = self.logloss(pred, labels)
+        x, y = self.logloss(pred, labels, margin=margin)
         accept = True
         if safe:
             mean = np.mean(y)
@@ -135,9 +130,8 @@ class Subtitle:
         if accept:
             secs = blocksToSeconds(x[np.argmin(y)])
             print("Shift:", secs)
-            subs = pysrt.open(self.path)
-            subs.shift(seconds=secs)
-            subs.save(self.path, encoding='utf-8')
+            self.subs.shift(seconds=secs)
+            self.subs.save(self.path, encoding='utf-8')
         if plot:
             self.plot_logloss(x, y)
 
@@ -167,9 +161,9 @@ def timeToPos(t, freq=Media.FREQ, hop_len=Media.HOP_LEN):
     return round(timeToSec(t)/(hop_len/freq))
 
 
+def secondsToBlocks(s, hop_len=Media.HOP_LEN, freq=Media.FREQ):
+    return int(float(s)/(hop_len/freq))
+
+
 def blocksToSeconds(h, freq=Media.FREQ, hop_len=Media.HOP_LEN):
     return float(h)*(hop_len/freq)
-
-def randomString(len=12):
-    allchar = string.ascii_letters + string.digits
-    return "".join(random.choice(allchar) for x in range(len))
