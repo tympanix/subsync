@@ -56,8 +56,8 @@ class Media:
                 yield Subtitle(self, os.path.join(dir, f))
 
 
-    def mfcc(self):
-        transcode = Transcode(self.filepath, duration=60*25, seek=True)
+    def mfcc(self, duration=60*15, seek=True):
+        transcode = Transcode(self.filepath, duration=duration, seek=seek)
         self.offset = transcode.start
         print("Transcoding:", transcode.output)
         transcode.run()
