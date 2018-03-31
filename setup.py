@@ -20,5 +20,10 @@ setup(name='subsync',
       packages=['subsync'],
       install_requires=[
           'tensorflow==1.5.1',
+          'numpy',
+          'matplotlib',
+          'librosa',
+          'h5py==2.8.0rc1',
+          'pysrt',
       ],
       zip_safe=False)
