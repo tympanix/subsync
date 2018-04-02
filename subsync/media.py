@@ -78,13 +78,6 @@ class Subtitle:
     functionality to inspect and manipulate the subtitle content
     """
 
-    # The maximum number of seconds to shift
-    MAX_TIME = 12.0
-
-    # Maximum number of items to shift
-    MAX_SHIFTS = int(MAX_TIME/(Media.HOP_LEN/Media.FREQ))
-
-
     def __init__(self, media, path):
         self.media = media
         self.path = path
