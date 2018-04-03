@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn
 
-from ffmpeg import Transcode
+from .ffmpeg import Transcode
 
 
 class Media:

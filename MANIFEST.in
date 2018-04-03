@@ -1,1 +1,1 @@
-include subsync/model/out/*.pb
+include subsync/*.pb
