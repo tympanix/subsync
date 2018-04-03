@@ -1,5 +1,8 @@
 #!/usr/bin/env make
 
+init:
+	pip install -r requirements.txt
+
 setup:
 	python subsync/model/train_data.py
 
