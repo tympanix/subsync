@@ -33,7 +33,7 @@ class Transcode:
 
     def command(self):
         cmd = [self.binary, '-y']
-        cmd.extend(('-i', self.input))
+        cmd.extend(('-i', shellquote(self.input)))
 
         if self.start > timedelta():
             cmd.extend(('-ss', duration_str(self.start)))
@@ -66,7 +66,7 @@ class Transcode:
 
 
     def run(self):
-        code = subprocess.call(self.command(), stderr=DEVNULL, shell=True)
+        code = subprocess.call(' '.join(self.command()), stderr=DEVNULL, shell=True)
         if code != 0:
             raise RuntimeError('Could not transcode audio:', self.input)
 
@@ -80,3 +80,7 @@ def duration_str(d):
     hours, remainder = divmod(d.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     return '{:02d}:{:02d}:{:02d}.{:06d}'.format(hours, minutes, seconds, d.microseconds)
+
+
+def shellquote(s):
+    return "'" + s.replace("'", "'\\''") + "'"
