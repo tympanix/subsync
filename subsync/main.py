@@ -1,11 +1,14 @@
 import argparse
 
+from .version import __version__
+
 def run():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('media', metavar='MEDIA', type=str, nargs='+',
         help='media for which to synchronize subtitles')
+    parser.add_argument('--version', action='version', version='%(prog)s {}'.format(__version__))
     parser.add_argument('--graph', dest="graph", action='store_true',
         help='show graph for subtitle synchronization')
     parser.add_argument('-d', '--duration', dest='duration', type=int, metavar='SECONDS', default=60*15,

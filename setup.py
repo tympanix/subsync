@@ -1,7 +1,9 @@
 from setuptools import setup
 
+exec(open('subsync/version.py').read())
+
 setup(name='subsync',
-      version='0.1.0',
+      version=__version__,
       description='Synchronize your subtitles with mahcine learning',
       classifiers=[
         'License :: OSI Approved :: MIT License',
