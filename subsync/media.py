@@ -2,7 +2,6 @@ import os
 import librosa
 import subprocess
 import tempfile
-import soundfile as sf
 import io
 import pysrt
 from pysrt import SubRipTime

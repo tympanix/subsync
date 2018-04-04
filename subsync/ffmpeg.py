@@ -4,6 +4,7 @@ import subprocess
 import os
 import tempfile
 import re
+import sys
 from datetime import timedelta
 from subprocess import DEVNULL, STDOUT, PIPE
 
@@ -83,4 +84,7 @@ def duration_str(d):
 
 
 def shellquote(s):
-    return "'" + s.replace("'", "'\\''") + "'"
+    if sys.platform == 'win32':
+        return "\"" + s.replace("\"", "\\\"") + "\""
+    else:
+        return "'" + s.replace("'", "'\\''") + "'"
