@@ -8,6 +8,7 @@ import pysrt
 from pysrt import SubRipTime
 import string
 import random
+import re
 from datetime import timedelta
 
 import matplotlib.pyplot as plt
@@ -40,21 +41,41 @@ class Media:
     LEN_MFCC = HOP_LEN/FREQ
 
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, subtitles=None):
         prefix, ext = os.path.splitext(filepath)
+        if ext == '.srt':
+            return self.from_srt(filepath)
         if ext not in Media.FORMATS:
             raise ValueError('filetype {} not supported'.format(ext))
+        self.__subtitles = subtitles
         self.filepath = filepath
         self.filename = os.path.basename(prefix)
         self.extension = ext
         self.offset = timedelta()
 
 
-    def subtitles(self):
-        dir = os.path.dirname(self.filepath)
+    def from_srt(self, filepath):
+        prefix, ext = os.path.splitext(filepath)
+        if ext != '.srt':
+            raise ValueError('filetype must be .srt format')
+        prefix = os.path.basename(re.sub(r'\.\w\w$', '', prefix))
+        dir = os.path.dirname(filepath)
         for f in os.listdir(dir):
-            if f.endswith('.srt') and f.startswith(self.filename):
-                yield Subtitle(self, os.path.join(dir, f))
+            _, ext = os.path.splitext(f)
+            if f.startswith(prefix) and ext in Media.FORMATS:
+                return self.__init__(os.path.join(dir, f), subtitles=[filepath])
+        raise ValueError('could not find media belonging to subtitle')
+
+
+    def subtitles(self):
+        if self.__subtitles is not None:
+            for s in self.__subtitles:
+                yield Subtitle(self, s)
+        else:
+            dir = os.path.dirname(self.filepath)
+            for f in os.listdir(dir):
+                if f.endswith('.srt') and f.startswith(self.filename):
+                    yield Subtitle(self, os.path.join(dir, f))
 
 
     def mfcc(self, duration=60*15, seek=True):
