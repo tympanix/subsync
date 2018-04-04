@@ -59,7 +59,7 @@ class Media:
     def mfcc(self, duration=60*15, seek=True):
         transcode = Transcode(self.filepath, duration=duration, seek=seek)
         self.offset = transcode.start
-        print("Transcoding:", transcode.output)
+        print("Transcoding...")
         transcode.run()
         y, sr = librosa.load(transcode.output, sr=Media.FREQ)
         print("Analysing...")
@@ -110,7 +110,7 @@ class Subtitle:
 
     def logloss(self, pred, actual, margin=12):
         blocks = secondsToBlocks(margin)
-        print("Calculating {} logloss values...".format(blocks*2))
+        print("Fitting...")
         logloss = np.ones(blocks*2)
         indices = np.ones(blocks*2)
         for i, offset in enumerate(range(-blocks, blocks)):
@@ -134,7 +134,7 @@ class Subtitle:
             accept = np.min(y) < mean - sd
         if accept:
             secs = blocksToSeconds(x[np.argmin(y)])
-            print("Shift:", secs)
+            print("Shift {} seconds:".format(secs))
             self.subs.shift(seconds=secs)
             self.subs.save(self.path, encoding='utf-8')
         if plot:
