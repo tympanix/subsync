@@ -15,6 +15,7 @@ import numpy as np
 import sklearn
 
 from .ffmpeg import Transcode
+from .log import logger
 
 
 class Media:
@@ -122,6 +123,7 @@ class Subtitle:
 
 
     def sync(self, net, safe=True, margin=12, plot=True):
+        secs = 0.0
         labels = self.labels()
         mfcc = self.media.mfcc.T
         mfcc = mfcc[..., np.newaxis]
@@ -137,8 +139,11 @@ class Subtitle:
             print("Shift {} seconds:".format(secs))
             self.subs.shift(seconds=secs)
             self.subs.save(self.path, encoding='utf-8')
+            if secs != 0.0:
+                logger.info('{}: {}s'.format(self.path, secs))
         if plot:
             self.plot_logloss(x, y)
+        return secs
 
 
     def plot_logloss(self, x, y):

@@ -1,5 +1,6 @@
 import argparse
 
+from .log import logger, init_logger
 from .version import __version__
 
 def run():
@@ -17,8 +18,13 @@ def run():
         help='the margin in which to search for a subtitle match')
     parser.add_argument('-s', '--start', dest='start', action='store_true',
         help='sample audio from the start of the media instad of the middle')
+    parser.add_argument('--logfile', dest='logfile', type=str, metavar='PATH',
+        help='path to location of log file for logging application specific information')
 
     args = parser.parse_args()
+
+    if args.logfile:
+        init_logger(args.logfile)
 
 
     from .media import Media
