@@ -1,14 +1,38 @@
 # Subsync
+**Synchronize your subtitles using machine learning**
 
+Subsync analyses and processes the sound from your media files and uses machine learning to detect speech. Speech detection is used to correlate the subtitle for a perfect mach in audio and text!
+
+A big thanks to:
+[[1] Automatic Subtitle Synchronization through Machine Learning](https://machinelearnings.co/automatic-subtitle-synchronization-e188a9275617) 
 
 ## Installation
-* Clone the repository
-* Create a virtual environment `virtualenv venv`
-* Install dependencies `pip install -r requirements.txt`
+```bash
+pip install subsync
+```
 
-## Getting Started
-  * Firstly, add some training material to `subsync/model/training` folder
-    * Movie material and matching subtitle (e.g. *train1.mkv* and *train1.srt*)
-  * Train the neural network `make train`
-  * Evaluate the performance of the neural network `make eval`
-  * Show the *logloss* graph for media files to plot the best subtitle match `make logloss`
+## Help
+```
+usage: subsync [-h] [--version] [--graph] [-d SECONDS] [-m SECONDS] [-s]
+                   [--logfile PATH]
+                   MEDIA [MEDIA ...]
+
+positional arguments:
+  MEDIA                 media for which to synchronize subtitles
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --graph               show graph for subtitle synchronization (default:
+                        False)
+  -d SECONDS, --duration SECONDS
+                        duration (in seconds) of the sample audio length
+                        increases precision but reduces speed (default: 900)
+  -m SECONDS, --margin SECONDS
+                        the margin in which to search for a subtitle match
+                        (default: 12)
+  -s, --start           sample audio from the start of the media instad of the
+                        middle (default: False)
+  --logfile PATH        path to location of log file for logging application
+                        specific information (default: None)
+```
