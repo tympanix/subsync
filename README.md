@@ -3,9 +3,6 @@
 
 Subsync analyses and processes the sound from your media files and uses machine learning to detect speech. Speech detection is used to correlate the subtitle for a perfect mach in audio and text!
 
-A big thanks to:
-[[1] Automatic Subtitle Synchronization through Machine Learning](https://machinelearnings.co/automatic-subtitle-synchronization-e188a9275617) 
-
 ## Installation
 ```bash
 pip install subsync
@@ -36,3 +33,6 @@ optional arguments:
   --logfile PATH        path to location of log file for logging application
                         specific information (default: None)
 ```
+
+## Special thanks
+[[1] Automatic Subtitle Synchronization through Machine Learning](https://machinelearnings.co/automatic-subtitle-synchronization-e188a9275617) 
