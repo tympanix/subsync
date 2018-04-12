@@ -4,7 +4,7 @@
 Subsync analyses and processes the sound from your media files and uses machine learning to detect speech. Speech detection is used to shift existing subtitles for a perfect match in audio and text!
 
 ## Features
- - [x] Machine learning model for audio detection (*not recognition*)
+ - [x] Machine learning model for voice activity detection (*not recognition*)
  - [x] Shift subtitle as a whole for best match
  - [ ] Sync every sentence in the subtitle individually
  - [ ] Sync using existing matched subtitle in a different laguage
