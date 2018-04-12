@@ -1,7 +1,7 @@
 # Subsync
 **Synchronize your subtitles using machine learning**
 
-Subsync analyses and processes the sound from your media files and uses machine learning to detect speech. Speech detection is used to correlate the subtitle for a perfect mach in audio and text!
+Subsync analyses and processes the sound from your media files and uses machine learning to detect speech. Speech detection is used to shift the subtitle for a perfect match in audio and text!
 
 ## Installation
 ```bash
