@@ -10,7 +10,6 @@ import random
 import re
 from datetime import timedelta
 
-import matplotlib.pyplot as plt
 import numpy as np
 import sklearn
 
@@ -167,6 +166,7 @@ class Subtitle:
 
 
     def plot_logloss(self, x, y):
+        import matplotlib.pyplot as plt
         plt.figure()
         plt.plot(x, y)
         plt.title('logloss over shifts')
