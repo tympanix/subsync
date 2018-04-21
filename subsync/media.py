@@ -46,7 +46,7 @@ class Media:
         if ext not in Media.FORMATS:
             raise ValueError('filetype {} not supported'.format(ext))
         self.__subtitles = subtitles
-        self.filepath = filepath
+        self.filepath = os.path.abspath(filepath)
         self.filename = os.path.basename(prefix)
         self.extension = ext
         self.offset = timedelta()
