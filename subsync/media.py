@@ -173,22 +173,23 @@ class Subtitle:
         return secs
 
 
-    def sync_all(self, net, margin=12, plot=True):
+    def sync_all(self, net, margin=16, plot=True):
         secs = 0.0
         mfcc = self.media.mfcc.T
         mfcc = mfcc[..., np.newaxis]
         pred = net.predict(mfcc)
         self.__sync_all_rec(self.subs, pred)
+        self.clean()
         self.subs.save(self.path, encoding='utf-8')
 
 
-    def __sync_all_rec(self, subs, pred, margin=12):
-        if len(subs) < 2:
+    def __sync_all_rec(self, subs, pred, margin=16):
+        if len(subs) < 3:
             return
         labels = self.labels(subs=subs)
         if np.unique(labels).size <= 1:
             return
-        x, y = self.logloss(pred, labels, margin=margin)
+        x, y = self.logloss(pred, labels, margin=max(margin, 0.25))
         #self.plot_logloss(x,y)
         #self.plot_labels(labels, pred)
         secs = blocksToSeconds(x[np.argmin(y)])
@@ -200,6 +201,16 @@ class Subtitle:
         right = subs.slice(starts_after=middle.start)
         self.__sync_all_rec(left, pred, margin=margin/2)
         self.__sync_all_rec(right, pred, margin=margin/2)
+
+
+    def clean(self):
+        for i, s in enumerate(self.subs):
+            if i >= len(self.subs)-1:
+                return
+            next = self.subs[i+1]
+            if s.end > next.start:
+                s.end = next.start
+
 
 
     def plot_logloss(self, x, y):
