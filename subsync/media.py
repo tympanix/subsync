@@ -103,12 +103,12 @@ class Subtitle:
         self.path = path
         self.subs = pysrt.open(self.path, encoding='iso-8859-1')
 
-    def labels(self):
+    def labels(self, subs=None):
         if self.media.mfcc is None:
             raise RuntimeError("Must analyse mfcc before generating labels")
         samples = len(self.media.mfcc[0])
         labels = np.zeros(samples)
-        for sub in self.subs:
+        for sub in self.subs if subs is None else subs:
             start = timeToPos(sub.start - self.offset())
             end = timeToPos(sub.end - self.offset())+1
             for i in range(start, end):
@@ -133,9 +133,17 @@ class Subtitle:
         print("Fitting...")
         logloss = np.ones(blocks*2)
         indices = np.ones(blocks*2)
+        nonzero = np.nonzero(actual)[0]
+        begin = max(nonzero[0]-blocks, 0)
+        end = min(nonzero[-1]+blocks, len(actual)-1)
+        pred = pred[begin:end]
+        actual = actual[begin:end]
         for i, offset in enumerate(range(-blocks, blocks)):
             snippet = np.roll(actual, offset)
-            logloss[i] = sklearn.metrics.log_loss(snippet[blocks:-blocks], pred[blocks:-blocks])
+            try:
+                logloss[i] = sklearn.metrics.log_loss(snippet[blocks:-blocks], pred[blocks:-blocks])
+            except ValueError:
+                pass
             indices[i] = offset
 
         return indices, logloss
@@ -165,6 +173,35 @@ class Subtitle:
         return secs
 
 
+    def sync_all(self, net, margin=12, plot=True):
+        secs = 0.0
+        mfcc = self.media.mfcc.T
+        mfcc = mfcc[..., np.newaxis]
+        pred = net.predict(mfcc)
+        self.__sync_all_rec(self.subs, pred)
+        self.subs.save(self.path, encoding='utf-8')
+
+
+    def __sync_all_rec(self, subs, pred, margin=12):
+        if len(subs) < 2:
+            return
+        labels = self.labels(subs=subs)
+        if np.unique(labels).size <= 1:
+            return
+        x, y = self.logloss(pred, labels, margin=margin)
+        #self.plot_logloss(x,y)
+        #self.plot_labels(labels, pred)
+        secs = blocksToSeconds(x[np.argmin(y)])
+        print("Shift {} subs {} seconds:".format(len(subs), secs))
+        subs.shift(seconds=secs)
+        # call recursively
+        middle = subs[len(subs)//2]
+        left = subs.slice(ends_before=middle.start)
+        right = subs.slice(starts_after=middle.start)
+        self.__sync_all_rec(left, pred, margin=margin/2)
+        self.__sync_all_rec(right, pred, margin=margin/2)
+
+
     def plot_logloss(self, x, y):
         import matplotlib.pyplot as plt
         plt.figure()
@@ -173,6 +210,23 @@ class Subtitle:
         plt.ylabel('logloss')
         plt.xlabel('shifts')
         plt.legend(['logloss'], loc='upper left')
+        plt.show()
+
+    def plot_labels(self, labels, pred):
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.plot([i for i in range(0,len(labels))], labels, label='labels')
+        plt.title('labels vs predictions')
+        plt.ylabel('value')
+        plt.xlabel('time')
+        plt.legend(['labels'], loc='upper left')
+
+        plt.figure()
+        plt.plot([i for i in range(0,len(pred))], pred, label='pred')
+        plt.title('labels vs predictions')
+        plt.ylabel('value')
+        plt.xlabel('time')
+        plt.legend(['pred'], loc='upper left')
         plt.show()
 
 

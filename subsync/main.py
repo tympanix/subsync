@@ -18,6 +18,8 @@ def run():
         help='the margin in which to search for a subtitle match')
     parser.add_argument('-s', '--start', dest='start', action='store_true',
         help='sample audio from the start of the media instad of the middle')
+    parser.add_argument('-r', '--recursive', dest='recursive', action='store_true',
+        help='recurviely sync every sentence in the subtitle')
     parser.add_argument('--logfile', dest='logfile', type=str, metavar='PATH',
         help='path to location of log file for logging application specific information')
 
@@ -34,6 +36,12 @@ def run():
     model = NeuralNet()
 
     for m in media:
-        m.mfcc(duration=args.duration, seek=not args.start)
+        if args.recursive:
+            m.mfcc(duration=0, seek=False)
+        else:
+            m.mfcc(duration=args.duration, seek=not args.start)
         for s in m.subtitles():
-            s.sync(model, plot=args.graph, margin=args.margin)
+            if args.recursive:
+                s.sync_all(model, plot=args.graph, margin=args.margin)
+            else:
+                s.sync(model, plot=args.graph, margin=args.margin)
