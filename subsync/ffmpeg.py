@@ -23,7 +23,7 @@ class Transcode:
         self.channels = channels
         self.samplerate = samplerate
         self.binary =  binary
-        self.start = start if type(duration) is timedelta else timedelta(seconds=start)
+        self.start = start if type(start) is timedelta else timedelta(seconds=start)
         self.duration = duration if type(duration) is timedelta else timedelta(seconds=duration)
         self.length = self.__length()
         if seek:
