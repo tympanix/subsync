@@ -85,7 +85,7 @@ def train_ann():
         'batch_size': 32,
         'shuffle': True,
         'validation_split': 0.3,
-        'verbose': 0,
+        'verbose': 2,
         'callbacks': [checkpoint, cutoff]
     }
 

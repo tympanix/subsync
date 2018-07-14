@@ -43,7 +43,7 @@ directory. Function returns a list of tuples; the .wav files and corresponding
 """
 def transcode_audio(dir=TRAIN_DIR):
     files = os.listdir(dir)
-    p = re.compile('.*\.[mkv|avi]')
+    p = re.compile('.*\.[mkv|avi|mp4]')
     files = [ f for f in files if p.match(f) ]
 
     training = []
@@ -65,7 +65,9 @@ def transcode_audio(dir=TRAIN_DIR):
 
         print("Transcoding:", input)
         command = "ffmpeg -y -i {0} -ab 160k -ac 2 -ar {2} -vn {1}".format(input, output, FREQ)
-        subprocess.call(command, stderr=subprocess.DEVNULL, shell=True)
+        code = subprocess.call(command, stderr=subprocess.DEVNULL, shell=True)
+        if code != 0:
+            raise Exception("ffmpeg returned: {}".format(code))
 
     return training
 
