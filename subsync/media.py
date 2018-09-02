@@ -43,8 +43,10 @@ class Media:
         prefix, ext = os.path.splitext(filepath)
         if ext == '.srt':
             return self.from_srt(filepath)
+        if not ext:
+            raise ValueError('unknown file: "{}"'.format(filepath))
         if ext not in Media.FORMATS:
-            raise ValueError('filetype {} not supported'.format(ext))
+            raise ValueError('filetype {} not supported: "{}"'.format(ext, filepath))
         self.__subtitles = subtitles
         self.filepath = os.path.abspath(filepath)
         self.filename = os.path.basename(prefix)
@@ -62,7 +64,7 @@ class Media:
             _, ext = os.path.splitext(f)
             if f.startswith(prefix) and ext in Media.FORMATS:
                 return self.__init__(os.path.join(dir, f), subtitles=[filepath])
-        raise ValueError('could not find media belonging to subtitle')
+        raise ValueError('no media for subtitle: "{}"'.format(filepath))
 
 
     def subtitles(self):
