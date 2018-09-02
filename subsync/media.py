@@ -130,7 +130,6 @@ class Subtitle:
 
     def logloss(self, pred, actual, margin=12):
         blocks = secondsToBlocks(margin)
-        print("Fitting...")
         logloss = np.ones(blocks*2)
         indices = np.ones(blocks*2)
         nonzero = np.nonzero(actual)[0]
@@ -178,6 +177,7 @@ class Subtitle:
         mfcc = self.media.mfcc.T
         mfcc = mfcc[..., np.newaxis]
         pred = net.predict(mfcc)
+        print("Fitting...")
         self.__sync_all_rec(self.subs, pred)
         self.clean()
         self.subs.save(self.path, encoding='utf-8')
@@ -193,7 +193,6 @@ class Subtitle:
         #self.plot_logloss(x,y)
         #self.plot_labels(labels, pred)
         secs = blocksToSeconds(x[np.argmin(y)])
-        print("Shift {} subs {} seconds:".format(len(subs), secs))
         subs.shift(seconds=secs)
         # call recursively
         middle = subs[len(subs)//2]
