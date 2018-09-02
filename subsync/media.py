@@ -101,7 +101,7 @@ class Subtitle:
     def __init__(self, media, path):
         self.media = media
         self.path = path
-        self.subs = pysrt.open(self.path, encoding='iso-8859-1')
+        self.subs = pysrt.open(self.path, encoding='utf-8')
 
     def labels(self, subs=None):
         if self.media.mfcc is None:

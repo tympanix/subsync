@@ -151,5 +151,8 @@ Desktop.ini
 # Windows shortcuts
 *.lnk
 
+# Visual studio code
+.vscode
+
 
 # End of https://www.gitignore.io/api/macos,python,windows
