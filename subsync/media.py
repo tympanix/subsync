@@ -141,7 +141,7 @@ class Subtitle:
             snippet = np.roll(actual, offset)
             try:
                 logloss[i] = sklearn.metrics.log_loss(snippet[blocks:-blocks], pred[blocks:-blocks])
-            except ValueError:
+            except (ValueError, RuntimeWarning):
                 pass
             indices[i] = offset
 
