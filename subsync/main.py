@@ -30,7 +30,7 @@ def run():
 
 
     from .media import Media
-    media = [Media(m) for m in args.media]
+    media = [Media(m) for m in args.media if m]
 
     from .net import NeuralNet
     model = NeuralNet()
