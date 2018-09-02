@@ -36,6 +36,8 @@ optional arguments:
                         (default: 12)
   -s, --start           sample audio from the start of the media instad of the
                         middle (default: False)
+  -r, --recursive       recurviely sync every sentence in the subtitle
+                        (default: False)
   --logfile PATH        path to location of log file for logging application
                         specific information (default: None)
 ```
