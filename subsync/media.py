@@ -7,6 +7,7 @@ import pysrt
 from pysrt import SubRipTime
 import string
 import random
+import chardet
 import re
 from datetime import timedelta
 
@@ -103,7 +104,7 @@ class Subtitle:
     def __init__(self, media, path):
         self.media = media
         self.path = path
-        self.subs = pysrt.open(self.path, encoding='utf-8')
+        self.subs = pysrt.open(self.path, encoding=self._find_encoding())
 
     def labels(self, subs=None):
         if self.media.mfcc is None:
@@ -118,6 +119,13 @@ class Subtitle:
                     labels[i] = 1
 
         return labels
+
+    def _find_encoding(self):
+        data = None
+        with open(self.path, "rb") as f:
+            data = f.read()
+        det = chardet.detect(data)
+        return det.get("encoding")
 
 
     def offset(self):
