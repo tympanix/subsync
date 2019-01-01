@@ -9,6 +9,9 @@ Subsync analyses and processes the sound from your media files and uses machine 
  - [x] Sync every sentence in the subtitle individually
  - [ ] Sync using existing matched subtitle in a different laguage
 
+## Dependencies
+* ffmpeg (https://www.ffmpeg.org/download.html)
+
 ## Installation
 ```bash
 pip install subsync
