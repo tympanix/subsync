@@ -4,7 +4,7 @@ exec(open('subsync/version.py').read())
 
 setup(name='subsync',
       version=__version__,
-      description='Synchronize your subtitles with mahcine learning',
+      description='Synchronize your subtitles with machine learning',
       classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
