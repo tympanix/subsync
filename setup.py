@@ -21,11 +21,11 @@ setup(name='subsync',
       license='MIT',
       packages=['subsync'],
       install_requires=[
-          'tensorflow==1.5.1',
+          'tensorflow>=1.0.0',
           'numpy',
           'matplotlib',
           'librosa',
-          'h5py==2.8.0rc1',
+          'h5py>=2.9.0',
           'pysrt',
       ],
       zip_safe=False)
