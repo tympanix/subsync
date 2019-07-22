@@ -25,5 +25,8 @@ test:
 freeze:
 	pip freeze > requirements.txt
 
+dist:
+	python setup.py sdist
+
 publish:
-	python setup.py sdist upload -r pypi
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
