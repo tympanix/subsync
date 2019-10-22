@@ -37,4 +37,4 @@ tensorboard==1.6.0
 tensorflow==1.5.0
 tensorflow-tensorboard==1.5.1
 termcolor==1.1.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
