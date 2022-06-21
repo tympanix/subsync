@@ -19,7 +19,7 @@ llvmlite==0.22.0
 Markdown==2.6.11
 matplotlib==2.2.2
 numba==0.37.0
-numpy==1.14.2
+numpy==1.22.0
 protobuf==3.5.2.post1
 pycparser==2.18
 pydot==1.2.4
