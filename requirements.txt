@@ -11,7 +11,7 @@ graphviz==0.8.2
 grpcio==1.10.0
 h5py==2.8.0rc1
 html5lib==0.9999999
-joblib==0.11
+joblib==1.2.0
 Keras==2.1.5
 kiwisolver==1.0.1
 librosa==0.6.0
