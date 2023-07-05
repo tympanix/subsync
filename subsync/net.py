@@ -2,6 +2,7 @@ import os
 import tensorflow as tf
 import numpy as np
 
+
 class NeuralNet:
     """
     NeuralNet provides a prediction model for predicting speech using
@@ -11,16 +12,14 @@ class NeuralNet:
     DIR = os.path.dirname(os.path.realpath(__file__))
 
     def __init__(self):
-        model = os.path.join(NeuralNet.DIR, 'subsync.pb')
+        model = os.path.join(NeuralNet.DIR, "subsync.pb")
         self.graph = self.load_graph(model)
-        self.input = self.graph.get_tensor_by_name('subsync/mfcc_in:0')
-        self.output = self.graph.get_tensor_by_name('subsync/speech_out:0')
-
+        self.input = self.graph.get_tensor_by_name("subsync/mfcc_in:0")
+        self.output = self.graph.get_tensor_by_name("subsync/speech_out:0")
 
     def summary(self):
         for op in self.graph.get_operations():
             print(op.name)
-
 
     def load_graph(self, frozen_graph_filename):
         with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
@@ -33,10 +32,9 @@ class NeuralNet:
                 input_map=None,
                 return_elements=None,
                 name="subsync",
-                producer_op_list=None
+                producer_op_list=None,
             )
         return graph
-
 
     def predict(self, mfcc):
         print("Predicting values...")

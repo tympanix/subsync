@@ -3,7 +3,7 @@ import numpy as np
 from train_data import *
 from train_ann import *
 
-MODEL = os.path.join(OUT_DIR, 'ann.hdf5')
+MODEL = os.path.join(OUT_DIR, "ann.hdf5")
 
 if not os.path.exists(MODEL):
     print("missing model:", MODEL)
@@ -13,9 +13,9 @@ if not os.path.exists(MODEL):
 def logloss(pred, actual):
     begin = np.argmax(actual) * (-1)
     end = np.argmax(actual[::-1]) + 1
-    print("Calculating {} logloss values".format(end-begin))
-    logloss = np.zeros(end-begin)
-    indices = np.zeros(end-begin)
+    print("Calculating {} logloss values".format(end - begin))
+    logloss = np.zeros(end - begin)
+    indices = np.zeros(end - begin)
     for i, offset in enumerate(range(begin, end)):
         logloss[i] = sklearn.metrics.log_loss(np.roll(actual, offset), pred)
         indices[i] = offset
@@ -26,10 +26,10 @@ def logloss(pred, actual):
 def plot_logloss(x, y):
     plt.figure()
     plt.plot(x, y)
-    plt.title('logloss over shifts')
-    plt.ylabel('logloss')
-    plt.xlabel('shifts')
-    plt.legend(['logloss'], loc='upper left')
+    plt.title("logloss over shifts")
+    plt.ylabel("logloss")
+    plt.xlabel("shifts")
+    plt.legend(["logloss"], loc="upper left")
 
 
 def load_model(input_shape):
@@ -37,7 +37,8 @@ def load_model(input_shape):
     model.load_weights(MODEL)
     return model
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     files = transcode_audio()
     mfcc, labels = extract_features(files=files)
 

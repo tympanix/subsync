@@ -3,7 +3,7 @@ from train_ann import *
 from train_data import *
 import os
 
-MODEL = os.path.join(OUT_DIR, 'ann.hdf5')
+MODEL = os.path.join(OUT_DIR, "ann.hdf5")
 
 
 if not os.path.exists(MODEL):
@@ -21,13 +21,13 @@ def plot_pred(pred, actual):
     plt.figure()
     plt.plot(pred)
     plt.plot(actual)
-    plt.title('prediction evaluation')
-    plt.ylabel('label')
-    plt.xlabel('time')
-    plt.legend(['pred', 'actual'], loc='upper left')
+    plt.title("prediction evaluation")
+    plt.ylabel("label")
+    plt.xlabel("time")
+    plt.legend(["pred", "actual"], loc="upper left")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     files = transcode_audio()
     wav, srt = extract_features(files=files)
 
