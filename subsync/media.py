@@ -13,6 +13,7 @@ from datetime import timedelta
 
 import numpy as np
 import sklearn
+import sklearn.metrics
 
 from .ffmpeg import Transcode
 from .log import logger
@@ -54,10 +55,16 @@ class Media:
         self.offset = timedelta()
 
     def from_srt(self, filepath):
+        filepath = os.path.abspath(filepath)
         prefix, ext = os.path.splitext(filepath)
         if ext != ".srt":
             raise ValueError("filetype must be .srt format")
-        prefix = os.path.basename(re.sub(r"\.\w\w$", "", prefix))
+        # Strip the following to find prefix:
+        # *.en.srt
+        # *.eng.srt
+        # *.en.forced.srt
+        # *.eng.forced.srt
+        prefix = os.path.basename(re.sub(r"\.\w{2,3}(\.\w+)?$", "", prefix))
         dir = os.path.dirname(filepath)
         for f in os.listdir(dir):
             _, ext = os.path.splitext(f)
