@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from .log import logger, init_logger
 from .version import __version__
@@ -6,14 +7,31 @@ from .version import __version__
 
 def run():
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description="""
+        Utility to synchronize a single srt-fromatted subtitles file with a video file.
+
+        The srt file is modified in-place so this utility must have read+write access to it
+
+        Example:
+        subsync --media video.mp4 --srt video.en.srt -r
+        """,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "media",
-        metavar="MEDIA",
+        "--media",
+        dest="media",
+        required=True,
         type=str,
-        nargs="+",
-        help="media for which to synchronize subtitles",
+        metavar="PATH",
+        help="Path to video file for which to synchronize subtitles (mkv, mp4, wmv, avi, flv)",
+    )
+    parser.add_argument(
+        "--srt",
+        dest="srt",
+        required=True,
+        type=str,
+        metavar="PATH",
+        help="Path to subtitles file to synchronize (srt format only)",
     )
     parser.add_argument(
         "--version", action="version", version="%(prog)s {}".format(__version__)
@@ -71,19 +89,23 @@ def run():
 
     from .media import Media
 
-    media = [Media(m) for m in args.media if m]
+    if not os.path.exists(args.media):
+        raise ValueError(f"{args.media} does not exist")
+    if not os.path.exists(args.srt):
+        raise ValueError(f"{args.srt} does not exist")
+
+    media = Media(filepath=args.media, subtitles=[args.srt])
 
     from .net import NeuralNet
 
     model = NeuralNet()
 
-    for m in media:
+    if args.recursive:
+        media.mfcc(duration=0, seek=False)
+    else:
+        media.mfcc(duration=args.duration, seek=not args.start)
+    for s in media.subtitles():
         if args.recursive:
-            m.mfcc(duration=0, seek=False)
+            s.sync_all(model, plot=args.graph, margin=args.margin)
         else:
-            m.mfcc(duration=args.duration, seek=not args.start)
-        for s in m.subtitles():
-            if args.recursive:
-                s.sync_all(model, plot=args.graph, margin=args.margin)
-            else:
-                s.sync(model, plot=args.graph, margin=args.margin)
+            s.sync(model, plot=args.graph, margin=args.margin)

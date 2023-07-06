@@ -85,7 +85,7 @@ class Media:
     def mfcc(self, duration=60 * 15, seek=True):
         transcode = Transcode(self.filepath, duration=duration, seek=seek)
         self.offset = transcode.start
-        print("Transcoding...")
+        print(f"Transcoding audio from {self.filepath}...")
         transcode.run()
         y, sr = librosa.load(transcode.output, sr=Media.FREQ)
         print("Analysing...")
@@ -191,6 +191,7 @@ class Subtitle:
         print("Fitting...")
         self.__sync_all_rec(self.subs, pred)
         self.clean()
+        print(f"Saving {self.path}")
         self.subs.save(self.path, encoding="utf-8")
 
     def __sync_all_rec(self, subs, pred, margin=16):
