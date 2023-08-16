@@ -13,6 +13,8 @@ from datetime import timedelta
 
 import numpy as np
 import sklearn
+from sklearn import metrics
+
 
 from .ffmpeg import Transcode
 from .log import logger
@@ -150,7 +152,7 @@ class Subtitle:
         for i, offset in enumerate(range(-blocks, blocks)):
             snippet = np.roll(actual, offset)
             try:
-                logloss[i] = sklearn.metrics.log_loss(snippet[blocks:-blocks], pred[blocks:-blocks])
+                logloss[i] = metrics.log_loss(snippet[blocks:-blocks], pred[blocks:-blocks])
             except (ValueError, RuntimeWarning):
                 pass
             indices[i] = offset
