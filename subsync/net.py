@@ -23,12 +23,13 @@ class NeuralNet:
 
 
     def load_graph(self, frozen_graph_filename):
-        with tf.gfile.GFile(frozen_graph_filename, "rb") as f:
-            graph_def = tf.GraphDef()
+        # Load the graph with TensorFlow 1.x compatibility mode
+        with tf.compat.v1.gfile.GFile(frozen_graph_filename, "rb") as f:
+            graph_def = tf.compat.v1.GraphDef()
             graph_def.ParseFromString(f.read())
 
         with tf.Graph().as_default() as graph:
-            tf.import_graph_def(
+            tf.compat.v1.import_graph_def(
                 graph_def,
                 input_map=None,
                 return_elements=None,
@@ -40,5 +41,6 @@ class NeuralNet:
 
     def predict(self, mfcc):
         print("Predicting values...")
-        with tf.Session(graph=self.graph) as sess:
+        with tf.compat.v1.Session(graph=self.graph) as sess:
             return sess.run(self.output, feed_dict={self.input: mfcc})
+
