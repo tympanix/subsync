@@ -1,13 +1,3 @@
-# Update
-
-## Updated version to run with tensorflow 2.0**
-
-The previous version would not install, so I had to make some modifications to this outstanding project.
-Tested on M1 Silicon Ventura.
-Use of Conda (Miniconda) is strongly recommended.
-Only minor tweaks were made, so bugs are expected.
-Check the installation section.
-
 # Subsync
 
 **Synchronize your subtitles using machine learning**
@@ -23,39 +13,12 @@ Subsync analyses and processes the sound from your media files and uses machine 
 
 ## Dependencies
 
-- ffmpeg (<https://www.ffmpeg.org/download.html>)
+* ffmpeg (<https://www.ffmpeg.org/download.html>)
 
 ## Installation
 
-1. Install miniconda (<https://docs.conda.io/en/latest/miniconda.html>).
-2. Create and activate a subsync environment:
-
 ```bash
-conda create --name subsync-env
-conda activate subsync-env
-```
-
-3. Install the package:
-
-```bash
-pip install git+https://github.com/StanislavAlexandrov/subsync
-```
-
-## Usage
-
-1. The video file and the subtitle file must have the same name. For instance myShow_s01e01.mkv and myShow_s01e01.srt
-2. Run the following command:
-
-```bash
-subsync -r myShow_s01e01.srt
-```
-
-3. The subtitle file will be overwritten with the synchronized subtitles! As of now, there is no indication that the script has run successfully.
-
-## Options
-
-```bash
-subsync -h
+pip install subsync
 ```
 
 ## Help
